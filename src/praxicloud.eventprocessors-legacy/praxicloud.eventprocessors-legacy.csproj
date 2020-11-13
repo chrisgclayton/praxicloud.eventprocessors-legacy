@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\common.props" />
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>PraxiCloud-EventProcessors-Legacy</PackageId>
+    <Description>PraxiCloud libraries offer a range of common functions, features and base classes to use when building solutions, increasing the time to delivery.</Description>
+    <PackageTags>praxicloud utilities event processor host lease blob checkpoint epoch</PackageTags>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <AssemblyVersion>1.0.11.0</AssemblyVersion>
+    <FileVersion>1.0.11.0</FileVersion>
+    <Copyright>© Chris Clayton. All rights reserved.</Copyright>
+    <RepositoryUrl>https://github.com/chrisgclayton/praxicloud.eventprocessors-legacy</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/chrisgclayton/praxicloud.eventprocessors-legacy</PackageProjectUrl>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\..\documents\praxicloud.eventprocessors-legacy.xml</DocumentationFile>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.6.0" />
+    <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="4.3.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="PraxiCloud-Core" Version="1.1.1" />
+    <PackageReference Include="PraxiCloud-Core-Metrics" Version="1.3.20201017.1" />
+    <PackageReference Include="PraxiCloud-Distributed" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>

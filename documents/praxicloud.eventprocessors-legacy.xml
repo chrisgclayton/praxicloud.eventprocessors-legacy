@@ -1,0 +1,1127 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>praxicloud.eventprocessors-legacy</name>
+    </assembly>
+    <members>
+        <member name="T:praxicloud.eventprocessors.legacy.CheckpointLease">
+            <summary>
+            An accessible lease that can be used for checkpointing containing the minimum required
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.CheckpointLease.#ctor">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.CheckpointLease.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="partitionId">The partition id</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.CheckpointLease.#ctor(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="source">The type the instance is using for content</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.CheckpointLease.op_Implicit(praxicloud.eventprocessors.legacy.CheckpointLease)~Microsoft.Azure.EventHubs.Processor.Checkpoint">
+            <summary>
+            Implicitly converts the lease to a checkpoint
+            </summary>
+            <param name="lease"></param>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager">
+            <summary>
+            An event processor host checkpoint manager that is backed by Azure Storage. The manager does not leverage leases to manage the checkpoint blobs, leaving it for the lease manager to ensure it is writing when valid
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._checkpointStoreContainer">
+            <summary>
+            The container provided as the base checkpoint store
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._consumerGroupDirectory">
+            <summary>
+            The directory for the consumer group
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._defaultRequestOptions">
+            <summary>
+            The default options to reduce the memory of recreation
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._checkpointEncoding">
+            <summary>
+            Set the default encoding type
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._client">
+            <summary>
+            Azure BLOB Storage client
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._containerName">
+            <summary>
+            The container that the checkpoints are stored in
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._subContainerPrefix">
+            <summary>
+            Prefix for the blob storage container
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._etags">
+            <summary>
+            Tracks the last etag values for checkpoints to perform optimistic locking
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._checkpointReadCounter">
+            <summary>
+            Metric recorder for the number of reads
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._checkpointUpdateCounter">
+            <summary>
+            Metric recorder for the number of writes
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._checkpointErrorCounter">
+            <summary>
+            Metric recorder for the number of errors encountered
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager._storagePerformanceSummary">
+            <summary>
+            Tracks the performance of accessing Azure storage, not separated by access type 
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="connectionString">The connection string used to access the Azure BLOB store</param>
+            <param name="containerName">The name of the container that the BLOBs are contained in</param>
+            <param name="subContainerPrefix">The prefix for the BLOB container</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,Microsoft.Azure.Storage.CloudStorageAccount,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
+            <param name="containerName">The name of the container that the BLOBs are contained in</param>
+            <param name="subContainerPrefix">The prefix for the BLOB container</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.Initialize(Microsoft.Azure.EventHubs.Processor.EventProcessorHost)">
+            <summary>
+            Initializes the lease manager for use, requiring access to the Event Processor Host details
+            </summary>
+            <param name="host">The Event Processor Host the lease manager is associated with</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.CheckpointStoreExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.CreateCheckpointStoreIfNotExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.DeleteCheckpointAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.GetCheckpointAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.UpdateCheckpointAsync(Microsoft.Azure.EventHubs.Processor.Lease,Microsoft.Azure.EventHubs.Processor.Checkpoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.CreateCheckpointIfNotExistsAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.AzureStorageCheckpointManager.GetCheckpointInternalAsync(System.String)">
+            <summary>
+            An common method to retrieve the Azure BLOB Lease from BLOB store
+            </summary>
+            <param name="partitionId">The partition id to retrieve the checkpoint for</param>
+            <returns>The checkpoint with contents of the BLOB and the etag</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry">
+            <summary>
+            EventHubs checkpoint details
+            </summary>
+            <remarks>Legacy BLOB checkpointing had the following format {"Offset":"12896067888","SequenceNumber":911736,"PartitionId":"0","Owner":"","Token":"","Epoch":23}</remarks>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.Offset">
+            <summary>
+            The event hub offset 
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.SequenceNumber">
+            <summary>
+            The event hub sequence number
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.PartitionId">
+            <summary>
+            The event hub partition id
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.Owner">
+            <summary>
+            The owner of the partition
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.Token">
+            <summary>
+            The token used to acquire the last lease
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.Epoch">
+            <summary>
+            The value of the latest epoch reader
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.ToJson">
+            <summary>
+            Returns the contents as a JSON string
+            </summary>
+            <returns>A JSON string representing the value of the checkpoint entry</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.FromJson(System.String)">
+            <summary>
+            Converts the JSON string to a checkpoint entry object
+            </summary>
+            <param name="json">The JSON to convert</param>
+            <returns>A checkpoint entry with the contents found in the JSON string</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.op_Implicit(Microsoft.Azure.EventHubs.Processor.Checkpoint)~praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry">
+            <summary>
+            Converts the checkpoint to a checkpoint entry with the specified details
+            </summary>
+            <param name="checkpoint">The checkpoint to convert</param>
+            <returns>A checkpoint entry with the contents of the checkpoint</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry.op_Implicit(praxicloud.eventprocessors.legacy.checkpoints.CheckpointEntry)~Microsoft.Azure.EventHubs.Processor.Checkpoint">
+            <summary>
+            Converts the checkpoint entry to a checkpoint with the specified details
+            </summary>
+            <param name="entry">The checkpoint entry to convert</param>
+            <returns>A checkpoint with the contents of the checkpoint entry</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager">
+            <summary>
+            An event processor host checkpoint manager that is backed by files. 
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._checkpointEncoding">
+            <summary>
+            Set the default encoding type
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._baseDirectory">
+            <summary>
+            The base directory for checkpoint partitions
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._ownershipLookup">
+            <summary>
+            A partition ownership lookup directory
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._eventProcessorName">
+            <summary>
+            The name of the event processor host
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._checkpointReadCounter">
+            <summary>
+            Metric recorder for the number of reads
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._checkpointUpdateCounter">
+            <summary>
+            Metric recorder for the number of writes
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._checkpointErrorCounter">
+            <summary>
+            Metric recorder for the number of errors encountered
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,praxicloud.eventprocessors.legacy.checkpoints.IOwnershipLookup,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.CheckpointStoreExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.CreateCheckpointStoreIfNotExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.CreateCheckpointIfNotExistsAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.DeleteCheckpointAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.GetCheckpointAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.UpdateCheckpointAsync(Microsoft.Azure.EventHubs.Processor.Lease,Microsoft.Azure.EventHubs.Processor.Checkpoint)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.GetFileName(System.String)">
+            <summary>
+            Gets the checkpoint file name for the partition id
+            </summary>
+            <param name="partitionId">The partition id</param>
+            <returns>Fully qualified file name</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.ReadCheckpointFromFileAsync(System.String)">
+            <summary>
+            Reads the checkpoint information from the file for partition id
+            </summary>
+            <param name="partitionId">The partition id the checkpoint data is for</param>
+            <returns>A checkpoint instance populated from the file</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.checkpoints.IOwnershipLookup">
+            <summary>
+            A directory to determine ownership of a partition
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.IOwnershipLookup.IsOwnerAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Checks if the specified partition is owned by the current instance
+            </summary>
+            <param name="partitionId">The partition id to check for ownership</param>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>True if the partition is owned</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.checkpoints.IPraxiCheckpointManager">
+            <summary>
+            A legacy event processor host checkpoint manager
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.IPraxiCheckpointManager.Initialize(Microsoft.Azure.EventHubs.Processor.EventProcessorHost)">
+            <summary>
+            Initializes the checkpoint manager for use, requiring access to the Event Processor Host details
+            </summary>
+            <param name="host">The Event Processor Host the lease manager is associated with</param>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._consumerGroupName">
+            <summary>
+            The name of the consumer group that the processor is associated with
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._epochStoreContainer">
+            <summary>
+            The container provided as the base lease store
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._consumerGroupDirectory">
+            <summary>
+            The directory for the consumer group
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._defaultRequestOptions">
+            <summary>
+            The default options to reduce the memory of recreation
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._operationContext">
+            <summary>
+            The default operations context for BLOB storage which will be null
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._defaultAccessCondition">
+            <summary>
+            The default access conditions to use when accessing BLOB storage
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._overwriteAccessCondition">
+            <summary>
+            Azure BLOB access conditions that overwrite the existing content
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._leaseEncoding">
+            <summary>
+            Set the default encoding type
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._epochReadCounter">
+            <summary>
+            Metric recorder for the number of reads
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._epochUpdateCounter">
+            <summary>
+            Metric recorder for the number of writes
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._epochErrorCounter">
+            <summary>
+            Metric recorder for the number of errors encountered
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._storagePerformanceSummary">
+            <summary>
+            Tracks the performance of accessing Azure storage, not separated by access type 
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
+            <param name="connectionString">The connection string used to access the Azure BLOB store</param>
+            <param name="containerName">The name of the container that the BLOBs are contained in</param>
+            <param name="subContainerPrefix">The prefix for the BLOB container</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,System.String,Microsoft.Azure.Storage.CloudStorageAccount,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
+            <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
+            <param name="containerName">The name of the container that the BLOBs are contained in</param>
+            <param name="subContainerPrefix">The prefix for the BLOB container</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.AddOrUpdateEpochAsync(praxicloud.eventprocessors.legacy.leases.EpochValue,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.DeleteEpochAsync(praxicloud.eventprocessors.legacy.leases.EpochValue,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.GetEpochAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.InitializeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.CreateEpochStoreIfNotExistsAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.DeleteEpochStoreAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder.EpochStoreExistsAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager">
+            <summary>
+            An event processor host lease manager that is backed by Azure Storage. 
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.MetaDataOwnerName">
+            <summary>
+            The owner to place in the lease contents
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._consumerGroupName">
+            <summary>
+            The name of the consumer group that the processor is associated with
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseStoreContainer">
+            <summary>
+            The container provided as the base lease store
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._consumerGroupDirectory">
+            <summary>
+            The directory for the consumer group
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._defaultRequestOptions">
+            <summary>
+            The default options to reduce the memory of recreation
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._operationContext">
+            <summary>
+            The default operations context for BLOB storage which will be null
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._defaultAccessCondition">
+            <summary>
+            The default access conditions to use when accessing BLOB storage
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._overwriteAccessCondition">
+            <summary>
+            Azure BLOB access conditions that overwrite the existing content
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseEncoding">
+            <summary>
+            Set the default encoding type
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._eventProcessorHostName">
+            <summary>
+            The name of the event processor host
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseReadCounter">
+            <summary>
+            Metric recorder for the number of reads
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseUpdateCounter">
+            <summary>
+            Metric recorder for the number of writes
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseErrorCounter">
+            <summary>
+            Metric recorder for the number of errors encountered
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._storagePerformanceSummary">
+            <summary>
+            Tracks the performance of accessing Azure storage, not separated by access type 
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
+            <param name="connectionString">The connection string used to access the Azure BLOB store</param>
+            <param name="containerName">The name of the container that the BLOBs are contained in</param>
+            <param name="subContainerPrefix">The prefix for the BLOB container</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,System.String,Microsoft.Azure.Storage.CloudStorageAccount,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
+            <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
+            <param name="containerName">The name of the container that the BLOBs are contained in</param>
+            <param name="subContainerPrefix">The prefix for the BLOB container</param>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.LeaseRenewInterval">
+            <inheritdoc />
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.LeaseDuration">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.InitializeAsync(Microsoft.Azure.EventHubs.Processor.EventProcessorHost)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.CreateLeaseStoreIfNotExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.DeleteLeaseStoreAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.LeaseStoreExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.AcquireLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.CreateLeaseIfNotExistsAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.DeleteLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.GetAllLeasesAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.GetLeaseAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.ReleaseLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.RenewLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.UpdateLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.UpdateLeaseCoreAsync(praxicloud.eventprocessors.legacy.storage.AzureBlobLease)">
+            <summary>
+            Updates the lease 
+            </summary>
+            <param name="lease">The lease to update</param>
+            <returns>True if updated successfully</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.RenewLeaseCoreAsync(praxicloud.eventprocessors.legacy.storage.AzureBlobLease)">
+            <summary>
+            Renews the lease
+            </summary>
+            <param name="lease">The lease to renew</param>
+            <returns>True if the lease is renewed successfully</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager.GetLeaseContentsInternalAsync(System.String)">
+            <summary>
+            An common method to retrieve the Azure BLOB Lease from BLOB store
+            </summary>
+            <param name="partitionId">The partition id to retrieve the checkpoint for</param>
+            <returns>The checkpoint with contents of the BLOB and the etag</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.EpochValue">
+            <summary>
+            The epoch content
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.EpochValue.Success">
+            <summary>
+            True if the value operation was successful
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.EpochValue.Result">
+            <summary>
+            The raw result code of the related operation
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.EpochValue.PartitionId">
+            <summary>
+            The partition id that the epoch is about
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.EpochValue.Epoch">
+            <summary>
+            The Epoch that the partition
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.EpochValue.ConcurrencyValue">
+            <summary>
+            The current etag or other concurrency value
+            </summary>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager">
+            <summary>
+            An event processor host lease manager that is backed by a managed index;
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.LeaseTokenOther">
+            <summary>
+            The name of the owner to use for other owner partitions
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.LeaseToken">
+            <summary>
+            A token to use for owned partitions
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._consumerGroupName">
+            <summary>
+            The name of the consumer group that the processor is associated with
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._leaseEncoding">
+            <summary>
+            Set the default encoding type
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._eventProcessorHostName">
+            <summary>
+            The name of the event processor host
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._partitionManager">
+            <summary>
+            An initialized string index manager
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._accessControl">
+            <summary>
+            A control for accessing the store
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._leases">
+            <summary>
+            The kubernetes leases that the store manages
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._epochRecorder">
+            <summary>
+            The store used to record values to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._epochs">
+            <summary>
+            The last known epochs
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.legacy.leases.FixedPartitionManager)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
+            <param name="partitionManager">An initialized string partition manager</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.legacy.leases.FixedPartitionManager,praxicloud.eventprocessors.legacy.leases.IEpochRecorder)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
+            <param name="partitionManager">An initialized string partition manager</param>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.LeaseRenewInterval">
+            <inheritdoc />
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.LeaseDuration">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.InitializeAsync(Microsoft.Azure.EventHubs.Processor.EventProcessorHost)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.ManagerQuantityUpdatedAsync(System.Int32)">
+            <summary>
+            Handles index manager changes
+            </summary>
+            <param name="quantity">The number of managers used to process the index range</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.CreateLeaseStoreIfNotExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.DeleteLeaseStoreAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.LeaseStoreExistsAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.AcquireLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.RenewLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.CreateLeaseIfNotExistsAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.DeleteLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.GetAllLeasesAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.GetLeaseAsync(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.ReleaseLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.UpdateLeaseAsync(Microsoft.Azure.EventHubs.Processor.Lease)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.GetLeaseInternalAsync(System.String)">
+            <summary>
+            Retrieves the lease without locking
+            </summary>
+            <param name="partitionId">The partition id to get the lease for</param>
+            <returns>The lease or null</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease">
+            <summary>
+            A lease object used by kubernetes lease management
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.#ctor">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="partitionId">The event hub partition id the lease is associated with</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.#ctor(praxicloud.eventprocessors.legacy.leases.FixedPartitionLease)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="source">The lease that this lease is based on</param>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.IsOwner">
+            <summary>
+            True if the current stateful set index is the owner of the partition
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.ExpirationTime">
+            <summary>
+            The time the lease expires
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.IsLeaseExpired">
+            <summary>
+            True if the lease should be considered expired and can be claimed
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.Clone">
+            <summary>
+            Performs a deep copy of the lease
+            </summary>
+            <returns>A clone of the current lease instance</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.IsExpired">
+            <inheritdocs cref="T:Microsoft.Azure.EventHubs.Processor.Lease" />
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager">
+            <summary>
+            A partition manager for Event Hub partitions
+            </summary>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.ManagerQuantityUpdated">
+            <summary>
+            Represents a callback for updates to the number of managers
+            </summary>
+            <param name="quantity">The updated number of managers</param>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._indexManager">
+            <summary>
+            The index manager used to track ownership
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._managerId">
+            <summary>
+            The zero based index of the manager
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._connectionString">
+            <summary>
+            The event hub connection string
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._updateLock">
+            <summary>
+            A lock to control access to activities that change ownership
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="logger">A logger to write debugging and diagnostics information to</param>
+            <param name="connectionString">The Azure Event Hub connection string to retrieve partition details from</param>
+            <param name="managerId">The zero based manager index</param>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.QuantityUpdateHandler">
+            <summary>
+            A handler to call when changes occur to the manager quantity
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.ManagerCount">
+            <summary>
+            The number of managers in use
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.InitializeAsync(System.Int32)">
+            <summary>
+            Initializes the ownership. This must be called before other activities occur
+            </summary>
+            <param name="managerQuantity">The new quantity of managers</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.IsOwner(System.String)">
+            <summary>
+            Checks to see if the partition specified is owned by the manager
+            </summary>
+            <param name="partitionId">The id of the partition to check</param>
+            <returns>True if the manager owns the specified partition</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.GetOwnedPartitions">
+            <summary>
+            Returns the ids of all partitions owned by the current manager
+            </summary>
+            <returns>An array of partition ids that are owned by the manager</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.GetPartitions">
+            <summary>
+            Returns the ids of all partitions 
+            </summary>
+            <returns>An array of partition ids</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.UpdateManagerQuantityAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Filters out changes to the state that do not impact the manager quantity
+            </summary>
+            <param name="managerQuantity">The new number of managers</param>
+            <param name="cancellationToken">A token to monitor for abort and cancellation requests</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.ManagerIndexUpdatedAsync(praxicloud.distributed.indexes.IIndexManager{System.String},System.Threading.CancellationToken)">
+            <summary>
+            An update handler when the index manager notifies of changes
+            </summary>
+            <param name="manager">The index manager where the change occurred</param>
+            <param name="cancellationToken">A token to monitor for abort and cancellation requests</param>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.IEpochRecorder">
+            <summary>
+            A store for lease epochs
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.InitializeAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Initializes the epoch reader, must be called before any operations
+            </summary>
+            <param name="eventProcessorHostName">The event processor host name</param>
+            <param name="cancellationToken">A token to monitor for abort and cancellation requests</param>
+            <returns>True if initialization is successful</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.AddOrUpdateEpochAsync(praxicloud.eventprocessors.legacy.leases.EpochValue,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Add or update the epoch value to the store
+            </summary>
+            <param name="value">The epoch to store</param>
+            <param name="force">true if the value should overwrite any existing ones, without using concurrency validation</param>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>True if the epoch could be added or updated, false if it failed. If a violation occurs a conflict will be returned</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.DeleteEpochAsync(praxicloud.eventprocessors.legacy.leases.EpochValue,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Deletes an existing epoch value from the store
+            </summary>
+            <param name="value">The epoch to delete</param>
+            <param name="force">true if the value should delete any existing ones without using concurrency validation</param>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>True if the epoch could be deleted or did not exist. If a violation occurs a conflict will be returned</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.GetEpochAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Retrieves the epoch value for the specified partition
+            </summary>
+            <param name="partitionId">The partition id to retrieve the epoch value for</param>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>An epoch response that includes the operation result within it</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.CreateEpochStoreIfNotExistsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Creates the epoch store
+            </summary>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>The outcome of the operation</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.DeleteEpochStoreAsync(System.Threading.CancellationToken)">
+            <summary>
+            Deletes the epoch store
+            </summary>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>The outcome of the operation</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IEpochRecorder.EpochStoreExistsAsync(System.Threading.CancellationToken)">
+            <summary>
+            Checks if the Epoch store works
+            </summary>
+            <param name="cancellationToken">A token to monitor for abort requests</param>
+            <returns>True if it exists</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.IPraxiLeaseManager">
+            <summary>
+            A legacy event processor host lease manager
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.IPraxiLeaseManager.InitializeAsync(Microsoft.Azure.EventHubs.Processor.EventProcessorHost)">
+            <summary>
+            Initializes the lease manager for use, requiring access to the Event Processor Host details
+            </summary>
+            <param name="host">The Event Processor Host the lease manager is associated with</param>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder">
+            <summary>
+            An epoch recorder that does not store the epoch
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder._logger">
+            <summary>
+            The logger to write debugging and diagnostics information to
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Initializes a new intance of the type
+            </summary>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.AddOrUpdateEpochAsync(praxicloud.eventprocessors.legacy.leases.EpochValue,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.DeleteEpochAsync(praxicloud.eventprocessors.legacy.leases.EpochValue,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.GetEpochAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.InitializeAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.DeleteEpochStoreAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.EpochStoreExistsAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.leases.NoopEpochRecorder.CreateEpochStoreIfNotExistsAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon">
+            <summary>
+            Common Azure BLOB operations
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.DefaultAccessCondition">
+            <summary>
+            The default access conditions to use when accessing BLOB storage
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.DefaultOperationContext">
+            <summary>
+            The default operations context for BLOB storage which will be null
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.OverwriteAccessCondition">
+            <summary>
+            Azure BLOB access conditions that overwrite the existing content
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.HandleStorageException(System.String,Microsoft.Azure.Storage.StorageException,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Handles the Azure Storage exceptions
+            </summary>
+            <param name="partitionId">The partition id</param>
+            <param name="exception">The storage exception that was raised</param>
+            <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <returns>The exception that was generated or passed in</returns>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.ValidContainerName(System.String,System.String)">
+            <summary>
+            Checks to make sure the container name is valid
+            </summary>
+            <param name="parameterName">The name of the parameter to validate</param>
+            <param name="containerName">The container name</param>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.storage.AzureBlobLease">
+            <summary>
+            A lease that leverages BLOB storage for ownership
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.#ctor">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.#ctor(System.String,Microsoft.Azure.Storage.Blob.CloudBlockBlob)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="partitionId">The partition id</param>
+            <param name="blob">The BLOB that is used for managing ownership</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.#ctor(System.String,System.String,Microsoft.Azure.Storage.Blob.CloudBlockBlob)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="partitionId"></param>
+            <param name="owner">The owner of the BLOBs</param>
+            <param name="blob">The BLOB that is used for managing ownership</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.#ctor(praxicloud.eventprocessors.legacy.storage.AzureBlobLease)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="source">A lease that is used for the source of the contents</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.#ctor(praxicloud.eventprocessors.legacy.storage.AzureBlobLease,Microsoft.Azure.Storage.Blob.CloudBlockBlob)">
+            <summary>
+            Initializes a new instance of the type
+            </summary>
+            <param name="source">A lease that is used for the source of the contents</param>
+            <param name="blob">The BLOB that is used for managing ownership</param>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.IsOwned">
+            <summary>
+            True if the lease currently owns the partition
+            </summary>
+        </member>
+        <member name="P:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.Blob">
+            <summary>
+            The BLOB that the lease is associated with
+            </summary>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobLease.IsExpired">
+            <summary>
+            True if the lease has expired
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings">
+            <summary>
+            BLOB Error code strings for easier translation.
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings.BlobAlreadyExists">
+            <summary>
+            Blob is already existing so the operation is not possible
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings.LeaseIdMissing">
+            <summary>
+            The lease id was not included
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings.LeaseLost">
+            <summary>
+            The lease identified is no longer held
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings.LeaseAlreadyPresent">
+            <summary>
+            There is already a lease on the BLOB
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings.LeaseIdMismatchWithLeaseOperation">
+            <summary>
+            The lease id is not possible for the operation
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.storage.BlobErrorCodeStrings.LeaseIdMismatchWithBlobOperation">
+            <summary>
+            The lease id is not possible for the BLOB operations
+            </summary>
+        </member>
+    </members>
+</doc>
