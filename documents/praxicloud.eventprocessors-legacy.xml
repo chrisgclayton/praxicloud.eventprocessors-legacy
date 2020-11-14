@@ -107,6 +107,7 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
             <param name="connectionString">The connection string used to access the Azure BLOB store</param>
             <param name="containerName">The name of the container that the BLOBs are contained in</param>
             <param name="subContainerPrefix">The prefix for the BLOB container</param>
@@ -116,6 +117,7 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
             <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
             <param name="containerName">The name of the container that the BLOBs are contained in</param>
             <param name="subContainerPrefix">The prefix for the BLOB container</param>
@@ -264,6 +266,15 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
+            <param name="baseDirectory">The directory that is the root of the epoch store</param>
+            <param name="ownershipLookup">An instance that can be used to look up ownership of partitions</param>
+        </member>
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.Initialize(Microsoft.Azure.EventHubs.Processor.EventProcessorHost)">
+            <summary>
+            Initializes the file checkpoint manager
+            </summary>
+            <param name="host">The event processor host that the checkpoints are performed for</param>
         </member>
         <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.CheckpointStoreExistsAsync">
             <inheritdoc />
@@ -307,6 +318,11 @@
             Initializes the checkpoint manager for use, requiring access to the Event Processor Host details
             </summary>
             <param name="host">The Event Processor Host the lease manager is associated with</param>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder">
+            <summary>
+            An epoch recorder that is backed by Azure Storage Blobs
+            </summary>
         </member>
         <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._logger">
             <summary>
@@ -378,6 +394,7 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
             <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="connectionString">The connection string used to access the Azure BLOB store</param>
             <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -388,6 +405,7 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
             <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
             <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -499,6 +517,7 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
             <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="connectionString">The connection string used to access the Azure BLOB store</param>
             <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -509,6 +528,7 @@
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
+            <param name="metricFactory">The factory to create metric recorders from</param>
             <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
             <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -576,6 +596,31 @@
             </summary>
             <param name="partitionId">The partition id to retrieve the checkpoint for</param>
             <returns>The checkpoint with contents of the BLOB and the etag</returns>
+        </member>
+        <member name="T:praxicloud.eventprocessors.legacy.leases.EpochOperationResult">
+            <summary>
+            The results of an Epoch operation
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.EpochOperationResult.Unknown">
+            <summary>
+            The results were not known
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.EpochOperationResult.Success">
+            <summary>
+            The operation was performed successfully
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.EpochOperationResult.Failure">
+            <summary>
+            The operation was performed but had a failure
+            </summary>
+        </member>
+        <member name="F:praxicloud.eventprocessors.legacy.leases.EpochOperationResult.Conflict">
+            <summary>
+            The operation was performed but there was a conflict with the existing epoch information
+            </summary>
         </member>
         <member name="T:praxicloud.eventprocessors.legacy.leases.EpochValue">
             <summary>
@@ -682,6 +727,7 @@
             <param name="logger">The logger to write debugging and diagnostics information to</param>
             <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="partitionManager">An initialized string partition manager</param>
+            <param name="epochRecorder">The instance of the recorder to write epoch information to</param>
         </member>
         <member name="P:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.LeaseRenewInterval">
             <inheritdoc />
@@ -912,7 +958,7 @@
             Azure BLOB access conditions that overwrite the existing content
             </summary>
         </member>
-        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.HandleStorageException(System.String,Microsoft.Azure.Storage.StorageException,Microsoft.Extensions.Logging.ILogger)">
+        <member name="M:praxicloud.eventprocessors.legacy.storage.AzureBlobCommon.CheckForLeaseLostException(System.String,Microsoft.Azure.Storage.StorageException,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Handles the Azure Storage exceptions
             </summary>

@@ -15,12 +15,12 @@ namespace praxicloud.eventprocessors.legacysample
     using praxicloud.eventprocessors.legacy.checkpoints;
     using praxicloud.eventprocessors.legacy.leases;
     #endregion
+    #region Methods
     /// <summary>
     /// The entry point to a sample processor that uses the fixed partition manager for leasing and Azure Storage for checkpointing
     /// </summary>
     class Program
-    {
-        #region Methods
+    {        
         /// <summary>
         /// The entry point
         /// </summary>
@@ -156,7 +156,7 @@ namespace praxicloud.eventprocessors.legacysample
                 PartitionManagerLogger = GetLogger("partitions", ephLevel),
                 EpochRecorderLogger = GetLogger("epoch", ephLevel)
             };
-        }
-        #endregion
+        }        
     }
+    #endregion
 }

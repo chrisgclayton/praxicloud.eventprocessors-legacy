@@ -18,6 +18,9 @@ namespace praxicloud.eventprocessors.legacy.leases
     using praxicloud.eventprocessors.legacy.storage;
     #endregion
 
+    /// <summary>
+    /// An epoch recorder that is backed by Azure Storage Blobs
+    /// </summary>
     public sealed class AzureStorageEpochRecorder : IEpochRecorder
     {
         #region Variables
@@ -91,6 +94,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
         /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="connectionString">The connection string used to access the Azure BLOB store</param>
         /// <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -103,6 +107,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
         /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
         /// <param name="containerName">The name of the container that the BLOBs are contained in</param>

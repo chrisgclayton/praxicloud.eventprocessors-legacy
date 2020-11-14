@@ -106,6 +106,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
         /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="connectionString">The connection string used to access the Azure BLOB store</param>
         /// <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -118,6 +119,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
         /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
         /// <param name="containerName">The name of the container that the BLOBs are contained in</param>
@@ -378,7 +380,7 @@ namespace praxicloud.eventprocessors.legacy.leases
                 catch (StorageException e)
                 {
                     _leaseErrorCounter.Increment();
-                    var se = AzureBlobCommon.HandleStorageException(partitionId, e, _logger);
+                    var se = AzureBlobCommon.CheckForLeaseLostException(partitionId, e, _logger);
 
                     _logger.LogError(se, "Error acquiring lease for partition {partitionId}", lease.PartitionId);
                     throw se;
@@ -544,7 +546,7 @@ namespace praxicloud.eventprocessors.legacy.leases
                 }
                 catch (StorageException e)
                 {
-                    var se = AzureBlobCommon.HandleStorageException(partitionId, e, _logger);
+                    var se = AzureBlobCommon.CheckForLeaseLostException(partitionId, e, _logger);
 
                     _logger.LogError(se, "Error releasing lease for partition {partitionId}", lease.PartitionId);
                     throw se;
@@ -604,7 +606,7 @@ namespace praxicloud.eventprocessors.legacy.leases
                 }
                 catch (StorageException e)
                 {
-                    var se = AzureBlobCommon.HandleStorageException(partitionId, e, _logger);
+                    var se = AzureBlobCommon.CheckForLeaseLostException(partitionId, e, _logger);
 
                     _logger.LogError(se, "Updating lease for partition {partitionId}", lease.PartitionId);
 
@@ -640,7 +642,7 @@ namespace praxicloud.eventprocessors.legacy.leases
                 }
                 catch (StorageException e)
                 {
-                    var se = AzureBlobCommon.HandleStorageException(partitionId, e, _logger);
+                    var se = AzureBlobCommon.CheckForLeaseLostException(partitionId, e, _logger);
 
                     _logger.LogError(se, "Renewing lease failed for partition {partitionId}", lease.PartitionId);
                     throw se;

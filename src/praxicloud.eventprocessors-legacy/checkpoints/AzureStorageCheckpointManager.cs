@@ -94,6 +94,7 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
         /// <param name="connectionString">The connection string used to access the Azure BLOB store</param>
         /// <param name="containerName">The name of the container that the BLOBs are contained in</param>
         /// <param name="subContainerPrefix">The prefix for the BLOB container</param>
@@ -105,6 +106,7 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
         /// <param name="storageAccount">The storage account used to access the Azure BLOB store</param>
         /// <param name="containerName">The name of the container that the BLOBs are contained in</param>
         /// <param name="subContainerPrefix">The prefix for the BLOB container</param>

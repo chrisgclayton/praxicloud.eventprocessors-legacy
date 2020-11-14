@@ -66,6 +66,9 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
+        /// <param name="metricFactory">The factory to create metric recorders from</param>
+        /// <param name="baseDirectory">The directory that is the root of the epoch store</param>
+        /// <param name="ownershipLookup">An instance that can be used to look up ownership of partitions</param>
         public FileCheckpointManager(ILogger logger, IMetricFactory metricFactory, IOwnershipLookup ownershipLookup, string baseDirectory)
         {
             Guard.NotNull(nameof(ownershipLookup), ownershipLookup);
@@ -87,7 +90,11 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
             }
         }
         #endregion
-
+        #region Methods
+        /// <summary>
+        /// Initializes the file checkpoint manager
+        /// </summary>
+        /// <param name="host">The event processor host that the checkpoints are performed for</param>
         public void Initialize(EventProcessorHost host)
         {
             var fullPath = Path.Combine(_baseDirectory, host.ConsumerGroupName);
@@ -363,5 +370,6 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
 
             return result;
         }
+        #endregion
     }
 }

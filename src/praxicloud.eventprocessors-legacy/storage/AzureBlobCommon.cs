@@ -41,7 +41,7 @@ namespace praxicloud.eventprocessors.legacy.storage
         /// <param name="exception">The storage exception that was raised</param>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
         /// <returns>The exception that was generated or passed in</returns>
-        public static Exception HandleStorageException(string partitionId, StorageException exception, ILogger logger)
+        public static Exception CheckForLeaseLostException(string partitionId, StorageException exception, ILogger logger)
         {
             Exception results = exception;
 

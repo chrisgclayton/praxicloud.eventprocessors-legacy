@@ -105,6 +105,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
         /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="partitionManager">An initialized string partition manager</param>
+        /// <param name="epochRecorder">The instance of the recorder to write epoch information to</param>
         public FixedLeaseManager(ILogger logger, string consumerGroupName, FixedPartitionManager partitionManager, IEpochRecorder epochRecorder)
         {
             Guard.NotNull(nameof(epochRecorder), epochRecorder);
