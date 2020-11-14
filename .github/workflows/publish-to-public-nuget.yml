@@ -29,8 +29,6 @@ jobs:
       run: dotnet restore ./src/praxicloud.eventprocessors-legacy.solution.sln
     - name: Build Library and Test Projects
       run: dotnet build --configuration Release --no-restore ./src/praxicloud.eventprocessors-legacy.solution.sln
-    - name: Test Library
-      run: dotnet test --no-restore --verbosity normal ./src/praxicloud.eventprocessors-legacy.tests/praxicloud.eventprocessors-legacy.tests.csproj
     - name: Package library
       run: dotnet pack --configuration Release ./src/praxicloud.eventprocessors-legacy/praxicloud.eventprocessors-legacy.csproj
     - name: Push library package to GitHub NUGET Feed
