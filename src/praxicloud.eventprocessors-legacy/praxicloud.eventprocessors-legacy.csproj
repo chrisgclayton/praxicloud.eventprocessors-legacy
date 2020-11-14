@@ -12,7 +12,7 @@
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
     <AssemblyVersion>1.0.11.0</AssemblyVersion>
     <FileVersion>1.0.11.0</FileVersion>
-    <Copyright>© Chris Clayton. All rights reserved.</Copyright>
+    <Copyright>© Christopher Clayton. All rights reserved.</Copyright>
     <RepositoryUrl>https://github.com/chrisgclayton/praxicloud.eventprocessors-legacy</RepositoryUrl>
     <PackageProjectUrl>https://github.com/chrisgclayton/praxicloud.eventprocessors-legacy</PackageProjectUrl>
   </PropertyGroup>
