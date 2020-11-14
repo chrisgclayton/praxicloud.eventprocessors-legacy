@@ -45,7 +45,7 @@ namespace praxicloud.eventprocessors.legacysample
                 InvokeProcessorAfterReceiveTimeout = true,
                 MaxBatchSize = 100,
                 PrefetchCount = 300,
-                ReceiveTimeout = TimeSpan.FromSeconds(60)
+                ReceiveTimeout = TimeSpan.FromSeconds(15)
             };
 
             var manager = new FixedPartitionManager(configuration.PartitionManagerLogger, configuration.EventHubConnectionString, processingManagerId);
@@ -61,8 +61,8 @@ namespace praxicloud.eventprocessors.legacysample
 
             host.PartitionManagerOptions = new PartitionManagerOptions();
 
-            host.PartitionManagerOptions.RenewInterval = TimeSpan.FromSeconds(5);
-            host.PartitionManagerOptions.LeaseDuration = TimeSpan.FromSeconds(15);
+            host.PartitionManagerOptions.RenewInterval = TimeSpan.FromSeconds(10);
+            host.PartitionManagerOptions.LeaseDuration = TimeSpan.FromSeconds(20);
 
             checkpointManager.Initialize(host);
             await leaseManager.InitializeAsync(host).ConfigureAwait(true);

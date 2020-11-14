@@ -312,12 +312,6 @@ namespace praxicloud.eventprocessors.legacy.leases
 
                     _logger.LogDebug("Partition {partitionId} owner check {isOwner}", lease.PartitionId, isOwner);
 
-                    if (!isOwner)
-                    {
-                        // Throw to force a stop to processing
-                        throw new LeaseLostException(lease.PartitionId, new ApplicationException($"Partition Id {lease.PartitionId} was found to not be owned in renewing lease"));
-                    }
-
                     if (_leases.TryGetValue(partitionId, out var existingLease))
                     {
                         if (isOwner == existingLease.IsOwner)
@@ -334,6 +328,12 @@ namespace praxicloud.eventprocessors.legacy.leases
                             existingLease.ExpirationTime = DateTime.MinValue;
                             existingLease.Token = isOwner ? string.Empty : LeaseTokenOther;
                         }
+                    }
+
+                    if (!isOwner)
+                    {
+                        // Throw to force a stop to processing
+                        throw new LeaseLostException(lease.PartitionId, new ApplicationException($"Partition Id {lease.PartitionId} was found to not be owned in renewing lease"));
                     }
                 }
             }
@@ -470,12 +470,6 @@ namespace praxicloud.eventprocessors.legacy.leases
                 var partitionId = lease.PartitionId;
                 var isOwner = _partitionManager.IsOwner(partitionId);
 
-                if (!isOwner)
-                {
-                    // Throw to force a stop to processing
-                    throw new LeaseLostException(lease.PartitionId, new ApplicationException($"Partition Id {lease.PartitionId} was found to not be owned in releasing lease"));
-                }
-
                 if (_leases.TryGetValue(partitionId, out var existingLease))
                 {
                     if(isOwner || existingLease.IsOwner)
@@ -485,6 +479,12 @@ namespace praxicloud.eventprocessors.legacy.leases
                         existingLease.Owner = string.Empty;
                         existingLease.Token = string.Empty;
                     }
+                }
+
+                if (!isOwner)
+                {
+                    // Throw to force a stop to processing
+                    throw new LeaseLostException(lease.PartitionId, new ApplicationException($"Partition Id {lease.PartitionId} was found to not be owned in releasing lease"));
                 }
             }
 
@@ -502,39 +502,41 @@ namespace praxicloud.eventprocessors.legacy.leases
 
                 using (await _accessControl.LockAsync().ConfigureAwait(false))
                 {
-                    if (lease != null && !string.IsNullOrWhiteSpace(lease.Token))
+                    if (lease != null)
                     {
                         var partitionId = lease.PartitionId;
                         var isOwner = _partitionManager.IsOwner(partitionId);
 
                         _logger.LogDebug("Is owner check for partition {partitionId}, {isOwner}", lease.PartitionId, isOwner);
 
+//                        if (!string.IsNullOrWhiteSpace(lease.Token))
+  //                      {
+                            if (_leases.TryGetValue(partitionId, out var existingLease))
+                            {
+                                existingLease.IsOwner = isOwner;
+
+                                if (existingLease.IsOwner)
+                                {
+                                    existingLease.Token = lease.Token;
+                                    existingLease.Owner = lease.Owner;
+                                    existingLease.Epoch = lease.Epoch;
+                                    existingLease.SequenceNumber = lease.SequenceNumber;
+                                    existingLease.Offset = lease.Offset;
+
+                                    success = true;
+                                }
+                                else
+                                {
+                                    existingLease.Token = LeaseTokenOther;
+                                    existingLease.ExpirationTime = DateTime.MaxValue;
+                                }
+                            }
+    //                    }
+
                         if (!isOwner)
                         {
                             // Throw to force a stop to processing
                             throw new LeaseLostException(lease.PartitionId, new ApplicationException($"Partition Id {lease.PartitionId} was found to not be owned in updating lease"));
-                        }
-
-
-                        if (_leases.TryGetValue(partitionId, out var existingLease))
-                        {
-                            existingLease.IsOwner = isOwner;
-
-                            if (existingLease.IsOwner)
-                            {
-                                existingLease.Token = lease.Token;
-                                existingLease.Owner = lease.Owner;
-                                existingLease.Epoch = lease.Epoch;
-                                existingLease.SequenceNumber = lease.SequenceNumber;
-                                existingLease.Offset = lease.Offset;
-
-                                success = true;
-                            }
-                            else
-                            {
-                                existingLease.Token = LeaseTokenOther;
-                                existingLease.ExpirationTime = DateTime.MaxValue;
-                            }
                         }
                     }
                 }
