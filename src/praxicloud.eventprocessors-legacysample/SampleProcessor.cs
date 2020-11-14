@@ -20,6 +20,8 @@ namespace praxicloud.eventprocessors.legacysample
 
         public async Task CloseAsync(PartitionContext context, CloseReason reason)
         {
+            Console.WriteLine($"Closing partition {context.PartitionId}");
+
             if (reason == CloseReason.Shutdown)
             {
                 await context.CheckpointAsync().ConfigureAwait(false);

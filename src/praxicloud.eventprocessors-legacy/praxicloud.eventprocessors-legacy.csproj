@@ -28,6 +28,7 @@
     <PackageReference Include="PraxiCloud-Core" Version="1.1.1" />
     <PackageReference Include="PraxiCloud-Core-Metrics" Version="1.3.20201017.1" />
     <PackageReference Include="PraxiCloud-Distributed" Version="1.1.1" />
+    <PackageReference Include="PraxiCloud-EventProcessors" Version="1.1.1" />
   </ItemGroup>
 
 </Project>

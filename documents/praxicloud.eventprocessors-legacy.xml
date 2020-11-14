@@ -259,7 +259,7 @@
             Metric recorder for the number of errors encountered
             </summary>
         </member>
-        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,praxicloud.eventprocessors.legacy.checkpoints.IOwnershipLookup,System.String)">
+        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.core.metrics.IMetricFactory,praxicloud.eventprocessors.IOwnershipLookup,System.String)">
             <summary>
             Initializes a new instance of the type
             </summary>
@@ -296,19 +296,6 @@
             </summary>
             <param name="partitionId">The partition id the checkpoint data is for</param>
             <returns>A checkpoint instance populated from the file</returns>
-        </member>
-        <member name="T:praxicloud.eventprocessors.legacy.checkpoints.IOwnershipLookup">
-            <summary>
-            A directory to determine ownership of a partition
-            </summary>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.checkpoints.IOwnershipLookup.IsOwnerAsync(System.String,System.Threading.CancellationToken)">
-            <summary>
-            Checks if the specified partition is owned by the current instance
-            </summary>
-            <param name="partitionId">The partition id to check for ownership</param>
-            <param name="cancellationToken">A token to monitor for abort requests</param>
-            <returns>True if the partition is owned</returns>
         </member>
         <member name="T:praxicloud.eventprocessors.legacy.checkpoints.IPraxiCheckpointManager">
             <summary>
@@ -680,7 +667,7 @@
             The last known epochs
             </summary>
         </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.legacy.leases.FixedPartitionManager)">
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.FixedPartitionManager)">
             <summary>
             Initializes a new instance of the type
             </summary>
@@ -688,7 +675,7 @@
             <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="partitionManager">An initialized string partition manager</param>
         </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.legacy.leases.FixedPartitionManager,praxicloud.eventprocessors.legacy.leases.IEpochRecorder)">
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.FixedPartitionManager,praxicloud.eventprocessors.legacy.leases.IEpochRecorder)">
             <summary>
             Initializes a new instance of the type
             </summary>
@@ -796,99 +783,6 @@
         </member>
         <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionLease.IsExpired">
             <inheritdocs cref="T:Microsoft.Azure.EventHubs.Processor.Lease" />
-        </member>
-        <member name="T:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager">
-            <summary>
-            A partition manager for Event Hub partitions
-            </summary>
-        </member>
-        <member name="T:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.ManagerQuantityUpdated">
-            <summary>
-            Represents a callback for updates to the number of managers
-            </summary>
-            <param name="quantity">The updated number of managers</param>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._indexManager">
-            <summary>
-            The index manager used to track ownership
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._managerId">
-            <summary>
-            The zero based index of the manager
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._connectionString">
-            <summary>
-            The event hub connection string
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._logger">
-            <summary>
-            The logger to write debugging and diagnostics information to
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager._updateLock">
-            <summary>
-            A lock to control access to activities that change ownership
-            </summary>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,System.Int32)">
-            <summary>
-            Initializes a new instance of the type
-            </summary>
-            <param name="logger">A logger to write debugging and diagnostics information to</param>
-            <param name="connectionString">The Azure Event Hub connection string to retrieve partition details from</param>
-            <param name="managerId">The zero based manager index</param>
-        </member>
-        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.QuantityUpdateHandler">
-            <summary>
-            A handler to call when changes occur to the manager quantity
-            </summary>
-        </member>
-        <member name="P:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.ManagerCount">
-            <summary>
-            The number of managers in use
-            </summary>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.InitializeAsync(System.Int32)">
-            <summary>
-            Initializes the ownership. This must be called before other activities occur
-            </summary>
-            <param name="managerQuantity">The new quantity of managers</param>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.IsOwner(System.String)">
-            <summary>
-            Checks to see if the partition specified is owned by the manager
-            </summary>
-            <param name="partitionId">The id of the partition to check</param>
-            <returns>True if the manager owns the specified partition</returns>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.GetOwnedPartitions">
-            <summary>
-            Returns the ids of all partitions owned by the current manager
-            </summary>
-            <returns>An array of partition ids that are owned by the manager</returns>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.GetPartitions">
-            <summary>
-            Returns the ids of all partitions 
-            </summary>
-            <returns>An array of partition ids</returns>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.UpdateManagerQuantityAsync(System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Filters out changes to the state that do not impact the manager quantity
-            </summary>
-            <param name="managerQuantity">The new number of managers</param>
-            <param name="cancellationToken">A token to monitor for abort and cancellation requests</param>
-        </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedPartitionManager.ManagerIndexUpdatedAsync(praxicloud.distributed.indexes.IIndexManager{System.String},System.Threading.CancellationToken)">
-            <summary>
-            An update handler when the index manager notifies of changes
-            </summary>
-            <param name="manager">The index manager where the change occurred</param>
-            <param name="cancellationToken">A token to monitor for abort and cancellation requests</param>
         </member>
         <member name="T:praxicloud.eventprocessors.legacy.leases.IEpochRecorder">
             <summary>

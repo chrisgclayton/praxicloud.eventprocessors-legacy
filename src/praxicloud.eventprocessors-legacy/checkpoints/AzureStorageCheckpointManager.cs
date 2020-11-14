@@ -359,7 +359,7 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
                     _checkpointErrorCounter.Increment();
                     _logger.LogError(e, "Error updating partition {partitionId}", blobLease.PartitionId);
 
-                    throw AzureBlobCommon.HandleStorageException(blobLease.PartitionId, e, _logger);
+                    throw;
                 }
             }
         }
