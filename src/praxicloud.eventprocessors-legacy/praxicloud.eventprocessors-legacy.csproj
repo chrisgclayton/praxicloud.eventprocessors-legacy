@@ -4,7 +4,6 @@
   
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>PraxiCloud-EventProcessors-Legacy</PackageId>
     <Description>PraxiCloud libraries offer a range of common functions, features and base classes to use when building solutions, increasing the time to delivery.</Description>
