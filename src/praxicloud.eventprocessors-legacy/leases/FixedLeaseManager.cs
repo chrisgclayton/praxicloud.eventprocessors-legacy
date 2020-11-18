@@ -12,7 +12,6 @@ namespace praxicloud.eventprocessors.legacy.leases
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using MathNet.Numerics.LinearAlgebra;
     using Microsoft.Azure.Amqp.Transaction;
     using Microsoft.Azure.EventHubs.Processor;
     using Microsoft.Extensions.Logging;
