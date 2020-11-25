@@ -28,7 +28,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// <summary>
         /// The owner to place in the lease contents
         /// </summary>
-        private static string MetaDataOwnerName = "AZBLOBLEASEMGR";
+        private const string MetaDataOwnerName = "AZBLOBLEASEMGR";
         #endregion
         #region Variables
         /// <summary>
@@ -80,11 +80,6 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// The name of the event processor host
         /// </summary>
         private string _eventProcessorHostName;
-
-        /// <summary>
-        /// Metric recorder for the number of reads
-        /// </summary>
-        private readonly ICounter _leaseReadCounter;
 
         /// <summary>
         /// Metric recorder for the number of writes
@@ -146,7 +141,6 @@ namespace praxicloud.eventprocessors.legacy.leases
                 _leaseStoreContainer = storageClient.GetContainerReference(containerName);
                 _consumerGroupDirectory = _leaseStoreContainer.GetDirectoryReference($"{subContainerPrefix}{consumerGroupName}");
 
-                _leaseReadCounter = metricFactory.CreateCounter("alm-lease-read", "The number of times that the Azure Storage lease manager has read the lease", false, new string[0]);
                 _leaseUpdateCounter = metricFactory.CreateCounter("alm-lease-update", "The number of times that the Azure Storage lease manager has updated the lease", false, new string[0]);
                 _leaseErrorCounter = metricFactory.CreateCounter("alm-lease-error", "The number of times that the Azure Storage lease manager has errors raised", false, new string[0]);
                 _storagePerformanceSummary = metricFactory.CreateSummary("alm-storage-timing", "The duration taken to access Azure Storage to perform lease manager operations", 10, false, new string[0]);
@@ -229,7 +223,7 @@ namespace praxicloud.eventprocessors.legacy.leases
 
                     foreach (IListBlobItem blobItem in outerResultSegment.Results)
                     {
-                        if (blobItem is CloudBlobDirectory)
+                        if (blobItem is CloudBlobDirectory directory)
                         {
                             BlobContinuationToken containerContinuationToken = null;
 
@@ -239,7 +233,7 @@ namespace praxicloud.eventprocessors.legacy.leases
 
                                 using (_storagePerformanceSummary.Time())
                                 {
-                                    containerResultSegment = await ((CloudBlobDirectory)blobItem).ListBlobsSegmentedAsync(containerContinuationToken).ConfigureAwait(false);
+                                    containerResultSegment = await directory.ListBlobsSegmentedAsync(containerContinuationToken).ConfigureAwait(false);
                                 }
 
                                 containerContinuationToken = containerResultSegment.ContinuationToken;
@@ -263,13 +257,13 @@ namespace praxicloud.eventprocessors.legacy.leases
                             }
                             while (containerContinuationToken != null);
                         }
-                        else if (blobItem is CloudBlockBlob)
+                        else if (blobItem is CloudBlockBlob blob)
                         {
                             try
                             {
                                 using (_storagePerformanceSummary.Time())
                                 {
-                                    await ((CloudBlockBlob)blobItem).DeleteIfExistsAsync().ConfigureAwait(false);
+                                    await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                                 }
                             }
                             catch (StorageException e)

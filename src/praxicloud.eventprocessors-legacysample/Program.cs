@@ -53,13 +53,15 @@ namespace praxicloud.eventprocessors.legacysample
             await manager.InitializeAsync(2).ConfigureAwait(true);
             var epochRecorder = new AzureStorageEpochRecorder(configuration.EpochRecorderLogger, metricFactory, configuration.ConsumerGroupName, configuration.CheckpointConnectionString, configuration.EpochContainerName, null);
 
-            var leaseManager = new FixedLeaseManager(configuration.LeaseLogger, configuration.ConsumerGroupName, manager, epochRecorder);
+            var leaseManager = new FixedLeaseManager(configuration.LeaseLogger, manager, epochRecorder);
             var checkpointManager = new AzureStorageCheckpointManager(configuration.CheckpointLogger, metricFactory, configuration.CheckpointConnectionString, configuration.CheckpointContainerName, null);
 
             var builder = new EventHubsConnectionStringBuilder(configuration.EventHubConnectionString);
-            var host = new EventProcessorHost(configuration.EventProcessorHostName, builder.EntityPath, configuration.ConsumerGroupName, builder.ToString(), checkpointManager, leaseManager);
 
-            host.PartitionManagerOptions = new PartitionManagerOptions();
+            var host = new EventProcessorHost(configuration.EventProcessorHostName, builder.EntityPath, configuration.ConsumerGroupName, builder.ToString(), checkpointManager, leaseManager)
+            {
+                PartitionManagerOptions = new PartitionManagerOptions()
+            };
 
             host.PartitionManagerOptions.RenewInterval = TimeSpan.FromSeconds(10);
             host.PartitionManagerOptions.LeaseDuration = TimeSpan.FromSeconds(20);

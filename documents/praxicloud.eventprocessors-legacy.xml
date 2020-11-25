@@ -226,11 +226,6 @@
             The logger to write debugging and diagnostics information to
             </summary>
         </member>
-        <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._checkpointEncoding">
-            <summary>
-            Set the default encoding type
-            </summary>
-        </member>
         <member name="F:praxicloud.eventprocessors.legacy.checkpoints.FileCheckpointManager._baseDirectory">
             <summary>
             The base directory for checkpoint partitions
@@ -329,11 +324,6 @@
             The logger to write debugging and diagnostics information to
             </summary>
         </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._consumerGroupName">
-            <summary>
-            The name of the consumer group that the processor is associated with
-            </summary>
-        </member>
         <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._epochStoreContainer">
             <summary>
             The container provided as the base lease store
@@ -357,11 +347,6 @@
         <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._defaultAccessCondition">
             <summary>
             The default access conditions to use when accessing BLOB storage
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._overwriteAccessCondition">
-            <summary>
-            Azure BLOB access conditions that overwrite the existing content
             </summary>
         </member>
         <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageEpochRecorder._leaseEncoding">
@@ -490,11 +475,6 @@
         <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._eventProcessorHostName">
             <summary>
             The name of the event processor host
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseReadCounter">
-            <summary>
-            Metric recorder for the number of reads
             </summary>
         </member>
         <member name="F:praxicloud.eventprocessors.legacy.leases.AzureStorageLeaseManager._leaseUpdateCounter">
@@ -672,16 +652,6 @@
             The logger to write debugging and diagnostics information to
             </summary>
         </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._consumerGroupName">
-            <summary>
-            The name of the consumer group that the processor is associated with
-            </summary>
-        </member>
-        <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._leaseEncoding">
-            <summary>
-            Set the default encoding type
-            </summary>
-        </member>
         <member name="F:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager._eventProcessorHostName">
             <summary>
             The name of the event processor host
@@ -712,20 +682,18 @@
             The last known epochs
             </summary>
         </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.FixedPartitionManager)">
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.eventprocessors.FixedPartitionManager)">
             <summary>
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
-            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="partitionManager">An initialized string partition manager</param>
         </member>
-        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,System.String,praxicloud.eventprocessors.FixedPartitionManager,praxicloud.eventprocessors.legacy.leases.IEpochRecorder)">
+        <member name="M:praxicloud.eventprocessors.legacy.leases.FixedLeaseManager.#ctor(Microsoft.Extensions.Logging.ILogger,praxicloud.eventprocessors.FixedPartitionManager,praxicloud.eventprocessors.legacy.leases.IEpochRecorder)">
             <summary>
             Initializes a new instance of the type
             </summary>
             <param name="logger">The logger to write debugging and diagnostics information to</param>
-            <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
             <param name="partitionManager">An initialized string partition manager</param>
             <param name="epochRecorder">The instance of the recorder to write epoch information to</param>
         </member>

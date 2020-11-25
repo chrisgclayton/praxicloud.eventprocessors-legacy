@@ -27,11 +27,6 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Set the default encoding type
-        /// </summary>
-        private readonly Encoding _checkpointEncoding = Encoding.ASCII;
-
-        /// <summary>
         /// The base directory for checkpoint partitions
         /// </summary>
         private string _baseDirectory;

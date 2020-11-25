@@ -230,7 +230,7 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
 
                     foreach (IListBlobItem blobItem in outerResultSegment.Results)
                     {
-                        if (blobItem is CloudBlobDirectory)
+                        if (blobItem is CloudBlobDirectory directory)
                         {
                             BlobContinuationToken containerContinuationToken = null;
 
@@ -240,7 +240,7 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
 
                                 using (_storagePerformanceSummary.Time())
                                 {
-                                    containerResultSegment = await ((CloudBlobDirectory)blobItem).ListBlobsSegmentedAsync(containerContinuationToken).ConfigureAwait(false);
+                                    containerResultSegment = await directory.ListBlobsSegmentedAsync(containerContinuationToken).ConfigureAwait(false);
                                 }
 
                                 containerContinuationToken = containerResultSegment.ContinuationToken;
@@ -263,13 +263,13 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
                             }
                             while (containerContinuationToken != null);
                         }
-                        else if (blobItem is CloudBlockBlob)
+                        else if (blobItem is CloudBlockBlob blob)
                         {
                             try
                             {
                                 using (_storagePerformanceSummary.Time())
                                 {
-                                    await ((CloudBlockBlob)blobItem).DeleteIfExistsAsync().ConfigureAwait(false);
+                                    await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                                 }
                             }
                             catch (StorageException e)
@@ -405,11 +405,11 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
                     else
                     {
                         _logger.LogDebug("Checkpoint exists, retrieving checkpoint for partition {partitionId}", partitionId);
-                        var checkpointInfo = await GetCheckpointInternalAsync(partitionId).ConfigureAwait(false);
+                        var (lease, etag) = await GetCheckpointInternalAsync(partitionId).ConfigureAwait(false);
                         _logger.LogDebug("Checkpoint retrieved for partition {partitionId}", partitionId);
 
-                        checkpoint = checkpointInfo.lease;
-                        _etags.AddOrUpdate(partitionId, checkpointInfo.etag, (pid, petag) => checkpointInfo.etag);
+                        checkpoint = lease;
+                        _etags.AddOrUpdate(partitionId, etag, (pid, petag) => etag);
                     }
                 }
                 catch (StorageException e)
@@ -419,9 +419,9 @@ namespace praxicloud.eventprocessors.legacy.checkpoints
                         // The blob already exists.
                         _logger.LogInformation("Checkpoint already exists, Partition {patitionId}", partitionId);
 
-                        var checkpointInfo = await GetCheckpointInternalAsync(partitionId).ConfigureAwait(false);
-                        checkpoint = checkpointInfo.lease;
-                        _etags.AddOrUpdate(partitionId, checkpointInfo.etag, (pid, petag) => checkpointInfo.etag);
+                        var (lease, etag) = await GetCheckpointInternalAsync(partitionId).ConfigureAwait(false);
+                        checkpoint = lease;
+                        _etags.AddOrUpdate(partitionId, etag, (pid, petag) => etag);
                     }
                     else
                     {

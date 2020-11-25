@@ -7,22 +7,13 @@ namespace praxicloud.eventprocessors.legacy.leases
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Amqp.Transaction;
     using Microsoft.Azure.EventHubs.Processor;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Nito.AsyncEx;
     using praxicloud.core.containers;
-    using praxicloud.core.metrics;
     using praxicloud.core.security;
-    using praxicloud.distributed.indexes;
-    using praxicloud.distributed.indexes.strings;
-
     #endregion
 
     /// <summary>
@@ -48,16 +39,6 @@ namespace praxicloud.eventprocessors.legacy.leases
         private readonly ILogger _logger;
 
         /// <summary>
-        /// The name of the consumer group that the processor is associated with
-        /// </summary>
-        private readonly string _consumerGroupName;
-
-        /// <summary>
-        /// Set the default encoding type
-        /// </summary>
-        private readonly Encoding _leaseEncoding = Encoding.ASCII;
-
-        /// <summary>
         /// The name of the event processor host
         /// </summary>
         private string _eventProcessorHostName;
@@ -75,7 +56,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// <summary>
         /// The kubernetes leases that the store manages
         /// </summary>
-        private Dictionary<string, FixedPartitionLease> _leases = new Dictionary<string, FixedPartitionLease>();
+        private readonly Dictionary<string, FixedPartitionLease> _leases = new Dictionary<string, FixedPartitionLease>();
 
         /// <summary>
         /// The store used to record values to
@@ -92,9 +73,8 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
-        /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="partitionManager">An initialized string partition manager</param>
-        public FixedLeaseManager(ILogger logger, string consumerGroupName, FixedPartitionManager partitionManager) : this(logger, consumerGroupName, partitionManager, new NoopEpochRecorder(logger))
+        public FixedLeaseManager(ILogger logger, FixedPartitionManager partitionManager) : this(logger, partitionManager, new NoopEpochRecorder(logger))
         {
         }
 
@@ -102,13 +82,11 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// Initializes a new instance of the type
         /// </summary>
         /// <param name="logger">The logger to write debugging and diagnostics information to</param>
-        /// <param name="consumerGroupName">The name of the consumer group that the processor is associated with</param>
         /// <param name="partitionManager">An initialized string partition manager</param>
         /// <param name="epochRecorder">The instance of the recorder to write epoch information to</param>
-        public FixedLeaseManager(ILogger logger, string consumerGroupName, FixedPartitionManager partitionManager, IEpochRecorder epochRecorder)
+        public FixedLeaseManager(ILogger logger, FixedPartitionManager partitionManager, IEpochRecorder epochRecorder)
         {
             Guard.NotNull(nameof(epochRecorder), epochRecorder);
-            Guard.NotNullOrWhitespace(nameof(consumerGroupName), consumerGroupName);
             Guard.NotNull(nameof(logger), logger);
             Guard.NotNull(nameof(partitionManager), partitionManager);
 
@@ -116,9 +94,8 @@ namespace praxicloud.eventprocessors.legacy.leases
 
             using (_logger.BeginScope("Fixed Lease Manager::ctor"))
             {
-                _logger.LogInformation("Creating fixed lease manager for consumer group {consumerGroupName}", consumerGroupName);
+                _logger.LogInformation("Creating fixed lease manager");
 
-                _consumerGroupName = consumerGroupName;
                 _partitionManager = partitionManager;
                 _epochRecorder = epochRecorder;
             }

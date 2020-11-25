@@ -30,11 +30,6 @@ namespace praxicloud.eventprocessors.legacy.leases
         private readonly ILogger _logger;
 
         /// <summary>
-        /// The name of the consumer group that the processor is associated with
-        /// </summary>
-        private readonly string _consumerGroupName;
-
-        /// <summary>
         /// The container provided as the base lease store
         /// </summary>
         private readonly CloudBlobContainer _epochStoreContainer;
@@ -58,11 +53,6 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// The default access conditions to use when accessing BLOB storage
         /// </summary>
         private readonly AccessCondition _defaultAccessCondition = null;
-
-        /// <summary>
-        /// Azure BLOB access conditions that overwrite the existing content
-        /// </summary>
-        private readonly AccessCondition _overwriteAccessCondition = AccessCondition.GenerateIfNoneMatchCondition("*");
 
         /// <summary>
         /// Set the default encoding type
@@ -120,7 +110,6 @@ namespace praxicloud.eventprocessors.legacy.leases
             AzureBlobCommon.ValidContainerName(nameof(containerName), containerName);
 
             _logger = logger;
-            _consumerGroupName = consumerGroupName;
 
             using (_logger.BeginScope("Azure Storage Lease Manager::ctor"))
             {
@@ -145,7 +134,7 @@ namespace praxicloud.eventprocessors.legacy.leases
         /// <inheritdoc />
         public async Task<EpochOperationResult> AddOrUpdateEpochAsync(EpochValue value, bool force, CancellationToken cancellationToken)
         {
-            EpochOperationResult results = EpochOperationResult.Unknown;
+            EpochOperationResult results;
 
             using (_logger.BeginScope("Update epoch"))
             {
@@ -323,7 +312,7 @@ namespace praxicloud.eventprocessors.legacy.leases
 
                     foreach (IListBlobItem blobItem in outerResultSegment.Results)
                     {
-                        if (blobItem is CloudBlobDirectory)
+                        if (blobItem is CloudBlobDirectory directory)
                         {
                             BlobContinuationToken containerContinuationToken = null;
 
@@ -333,7 +322,7 @@ namespace praxicloud.eventprocessors.legacy.leases
 
                                 using (_storagePerformanceSummary.Time())
                                 {
-                                    containerResultSegment = await ((CloudBlobDirectory)blobItem).ListBlobsSegmentedAsync(containerContinuationToken).ConfigureAwait(false);
+                                    containerResultSegment = await directory.ListBlobsSegmentedAsync(containerContinuationToken).ConfigureAwait(false);
                                 }
 
                                 containerContinuationToken = containerResultSegment.ContinuationToken;
@@ -357,13 +346,13 @@ namespace praxicloud.eventprocessors.legacy.leases
                             }
                             while (containerContinuationToken != null);
                         }
-                        else if (blobItem is CloudBlockBlob)
+                        else if (blobItem is CloudBlockBlob blob)
                         {
                             try
                             {
                                 using (_storagePerformanceSummary.Time())
                                 {
-                                    await ((CloudBlockBlob)blobItem).DeleteIfExistsAsync().ConfigureAwait(false);
+                                    await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                                 }
                             }
                             catch (StorageException e)
